@@ -1,0 +1,26 @@
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+python-multipart==0.0.9
+PyMuPDF==1.23.6
+# sentence-transformers & transformers — versions must stay in sync
+sentence-transformers==3.0.1
+transformers==4.41.2
+# torch/torchvision/torchaudio come pre-installed in the pytorch base image;
+# do NOT add them here or pip will overwrite the CUDA build with a CPU build.
+pinecone==5.4.2
+openai==1.50.0
+httpx==0.27.2
+networkx==3.2.1
+pydantic==2.7.1
+pydantic-settings==2.2.1
+python-dotenv==1.0.0
+Pillow==10.1.0
+numpy==1.26.4
+tiktoken==0.5.2
+scipy==1.11.4
+imageio-ffmpeg==0.5.1
+# openai-whisper is installed separately in the Dockerfile before this file
+# so that its torch dependency resolves against the pre-installed CUDA build.
+openai-whisper==20231117
+slowapi==0.1.9
+redis==5.0.1

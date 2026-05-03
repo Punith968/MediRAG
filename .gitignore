@@ -1,0 +1,27 @@
+.aider*
+.env
+
+# Node
+frontend/node_modules/
+node_modules/
+
+# Python
+venv/
+backend/venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Temporary & Build files
+.tmp/
+tmp/
+medirag_tmp/
+frontend/dist/
+backend/.pytest_cache/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

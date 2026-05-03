@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Global reset & font ─────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Brand palette */
+  --color-bg:          #080d1a;
+  --color-surface:     rgba(15, 23, 42, 0.85);
+  --color-surface-2:   rgba(30, 41, 59, 0.70);
+  --color-border:      rgba(99, 179, 237, 0.12);
+  --color-border-hi:   rgba(99, 179, 237, 0.35);
+
+  --color-primary:     #38bdf8;
+  --color-primary-dim: #0ea5e9;
+  --color-accent:      #818cf8;
+  --color-success:     #34d399;
+  --color-warning:     #fbbf24;
+  --color-error:       #f87171;
+
+  /* Glow tokens */
+  --glow-primary: 0 0 20px rgba(56, 189, 248, 0.25);
+  --glow-accent:  0 0 20px rgba(129, 140, 248, 0.25);
+}
+
+html {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  color: #e2e8f0;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(99, 179, 237, 0.25); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(99, 179, 237, 0.45); }
+
+/* ── Utility layer ──────────────────────────────────────────────────────── */
+@layer utilities {
+  .glass {
+    background: var(--color-surface);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border: 1px solid var(--color-border);
+  }
+
+  .glass-hi {
+    background: var(--color-surface-2);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid var(--color-border-hi);
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glow-primary { box-shadow: var(--glow-primary); }
+  .glow-accent  { box-shadow: var(--glow-accent);  }
+}
