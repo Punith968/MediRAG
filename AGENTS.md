@@ -47,7 +47,11 @@ Required in `.env`:
 - **D3.js knowledge graph**: Force-directed visualization at page load
 
 ## Utility Scripts
-- `clear_pinecone.py` — reset the vector index
+
+**Repository root:**
+- `clear_pinecone.py` — reset the vector index (requires PINECONE_API_KEY in .env)
+
+**`backend/`:**
 - `list_models.py` — list available Whisper/CLIP models
 
 ## Critical Quirks
