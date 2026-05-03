@@ -45,10 +45,14 @@ def validate_file(filename: str, file_size: int) -> None:
             detail=f"File too large. Maximum size is 20MB, got {file_size / (1024*1024):.1f}MB"
         )
     
-    ext = os.path.splitext(filename or "")[1].lower() if filename else ""
+    logger.info(f"Validating file: '{filename}'")
+    parts = (filename or "").replace("..", ".").split(".")
+    ext = "." + parts[-1].lower() if len(parts) > 1 else ""
+    logger.info(f"Extracted extension: '{ext}'")
     all_allowed = set().union(*ALLOWED_EXTENSIONS.values())
     
     if ext not in all_allowed:
+        logger.warning(f"Extension '{ext}' not in allowed: {all_allowed}")
         allowed_list = ", ".join(sorted(all_allowed))
         raise HTTPException(
             status_code=400,
@@ -78,11 +82,13 @@ async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
 async def _process_single_file(file: UploadFile) -> dict:
     """Process a single uploaded file and return its result."""
     file_bytes = await file.read()
+    logger.info(f"Processing file: {file.filename}, size: {len(file_bytes)}")
     
     # Validate file extension and size
     validate_file(file.filename, len(file_bytes))
     
-    ext = os.path.splitext(file.filename or "")[1].lower()
+    parts = (file.filename or "").replace("..", ".").split(".")
+    ext = parts[-1].lower() if len(parts) > 1 else ""
     doc_id = str(uuid.uuid4())
     
     if ext == "pdf":
