@@ -282,8 +282,10 @@ export default function App() {
     ));
     const fd = new FormData();
     pending.forEach(f => fd.append('files', f.file));
+    console.log('[Upload] Starting upload, files:', pending.map(f => f.file.name));
     try {
       const { data } = await axios.post(`${API}/upload-batch`, fd);
+      console.log('[Upload] Success:', data);
       setFiles(prev => {
         const u = [...prev];
         for (const r of (data.results ?? []) as any[]) {
@@ -294,6 +296,7 @@ export default function App() {
       });
       setUploadSummary(data.summary);
     } catch (err: any) {
+      console.error('[Upload] Error:', err.response?.status, err.response?.data);
       setFiles(prev => prev.map(f =>
         f.status === 'uploading' ? { ...f, status: 'error' as const, message: 'Upload failed.' } : f
       ));
