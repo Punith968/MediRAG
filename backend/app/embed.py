@@ -7,6 +7,7 @@ import numpy as np
 import torch
 from dotenv import load_dotenv
 from pinecone import Pinecone, ServerlessSpec
+from .vector_store import PineconeVectorStore
 from sentence_transformers import SentenceTransformer
 from transformers import CLIPModel, CLIPProcessor
 
@@ -41,7 +42,7 @@ if PINECONE_API_KEY:
                 metric="cosine",
                 spec=ServerlessSpec(cloud="aws", region=PINECONE_ENV),
             )
-        index = _pc.Index(INDEX_NAME)
+        index = PineconeVectorStore(_pc.Index(INDEX_NAME))
         logger.info("Pinecone index '%s' connected (dim=%d).", INDEX_NAME, INDEX_DIMENSION)
     except Exception as e:
         logger.warning("Pinecone initialisation failed: %s", e)
@@ -225,15 +226,7 @@ def store_embedding(doc_id: str, embedding: list[float], metadata: dict) -> None
             safe_metadata[k] = v
 
     try:
-        index.upsert(
-            vectors=[
-                {
-                    "id": doc_id,
-                    "values": embedding,
-                    "metadata": safe_metadata,
-                }
-            ]
-        )
+        index.upsert(doc_id, embedding, safe_metadata)
         logger.info("Upserted vector '%s' into Pinecone.", doc_id)
     except Exception as exc:
         logger.warning("Pinecone upsert failed for '%s': %s", doc_id, exc)
