@@ -1,8 +1,4 @@
-"""Dependency-light retrieval helpers.
-
-These functions intentionally avoid model, vector database, and web framework
-imports so they can be tested and reused independently.
-"""
+"""Dependency-light retrieval helpers."""
 
 from __future__ import annotations
 
