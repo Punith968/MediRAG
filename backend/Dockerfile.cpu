@@ -1,0 +1,18 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC
+
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg libsm6 libxext6 git \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip "setuptools<81" wheel \
+    && pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+RUN mkdir -p /tmp/medirag
+ENV MEDIRAG_TMP_DIR=/tmp/medirag
+
+EXPOSE 8000
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--log-level", "info"]
