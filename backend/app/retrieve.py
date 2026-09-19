@@ -408,6 +408,36 @@ Always end with this medical disclaimer:
 
 
 # ---------------------------------------------------------------------------
+# Provenance helpers
+# ---------------------------------------------------------------------------
+
+def build_provenance(text_hits: list[dict], image_hits: list[dict]) -> list[dict]:
+    """Return compact source metadata for clients that need answer provenance."""
+    sources = []
+    seen_ids: set[str] = set()
+
+    for hit in [*text_hits, *image_hits]:
+        metadata = hit.get("metadata") or {}
+        source_id = str(metadata.get("id") or hit.get("id") or "")
+        if not source_id or source_id in seen_ids:
+            continue
+        seen_ids.add(source_id)
+
+        modality = _metadata_type(metadata).upper() or "UNKNOWN"
+        source = {
+            "id": source_id,
+            "filename": metadata.get("filename", "Unknown source"),
+            "modality": modality,
+        }
+        if hit.get("score") is not None:
+            source["retrieval_score"] = float(hit["score"])
+        if hit.get("rerank_score") is not None:
+            source["rerank_score"] = float(hit["rerank_score"])
+        sources.append(source)
+
+    return sources
+
+# ---------------------------------------------------------------------------
 # Main query pipeline
 # ---------------------------------------------------------------------------
 
@@ -518,9 +548,12 @@ IMPORTANT: Conclude with this disclaimer: {MEDICAL_DISCLAIMER}
     else:
         response_text = "Error: OpenRouter API Key not configured. Please set OPENROUTER_API_KEY."
 
+    provenance = build_provenance(text_hits, image_hits)
+
     return {
         "query": query_text,
         "vector_context": pure_vector_context_str,
+        "sources": provenance,
         "graph_context": graph_context_str,
         "image_analysis": image_analysis or "",
         "image_context_enabled": True,
