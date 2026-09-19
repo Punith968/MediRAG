@@ -8,6 +8,7 @@ from PIL import Image
 
 from .embed import get_text_embedding, index
 from .graph import get_context
+from .core.retrieval import rerank as core_rerank
 from .providers import OpenRouterProvider
 
 load_dotenv()
@@ -119,35 +120,8 @@ def _normalize_text(text: str) -> str:
     return " ".join((text or "").split()).strip().lower()
 
 
-def rerank(query_embedding: list[float], results: list[dict]) -> list[dict]:
-    """Rerank results by cosine similarity with query embedding."""
-    import numpy as np
-    
-    if not results or not query_embedding:
-        return results
-    
-    query_vec = np.array(query_embedding, dtype=np.float32)
-    query_norm = np.linalg.norm(query_vec)
-    if query_norm == 0:
-        return results
-    
-    reranked = []
-    for result in results:
-        emb = result.get("embedding")
-        if emb is None:
-            continue
-        
-        result_vec = np.array(emb, dtype=np.float32)
-        norm = np.linalg.norm(result_vec)
-        if norm == 0:
-            continue
-        
-        similarity = float(np.dot(query_vec, result_vec) / (query_norm * norm))
-        reranked.append({**result, "rerank_score": similarity})
-    
-    reranked.sort(key=lambda x: x.get("rerank_score", 0), reverse=True)
-    return reranked
-
+def rerank(query_embedding, results):
+    return core_rerank(query_embedding, results)
 
 def _fetch_embeddings_for_results(hits: list[dict]) -> list[dict]:
     """Fetch embeddings from Pinecone for results that don't have them."""
