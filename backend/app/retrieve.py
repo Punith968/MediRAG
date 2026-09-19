@@ -40,9 +40,7 @@ def _vector_count() -> int:
     if index is None:
         return 0
     try:
-        stats = index.describe_index_stats()
-        # pinecone>=3 returns a DescribeIndexStatsResponse object
-        return int(getattr(stats, "total_vector_count", 0) or 0)
+        return int(index.count() or 0)
     except Exception as exc:
         logger.warning("Unable to read Pinecone vector count: %s", exc)
         return 0
@@ -163,7 +161,7 @@ def _fetch_embeddings_for_results(hits: list[dict]) -> list[dict]:
         return hits
     
     try:
-        fetch_response = index.fetch(ids=doc_ids)
+        fetch_response = index.fetch(doc_ids)
         fetched_vectors = fetch_response.get("vectors", {})
     except Exception as exc:
         logger.warning("Failed to fetch embeddings from Pinecone: %s", exc)
