@@ -19,7 +19,7 @@ jobs:
       - name: Install test dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install "fastapi==0.111.0" "openai==1.50.0" "slowapi==0.1.9" "Pillow==10.1.0" "redis==5.0.8" "numpy==1.26.4" "torch==2.2.2" pytest
+          pip install "fastapi==0.111.0" "openai==1.50.0" "slowapi==0.1.9" "Pillow==10.1.0" "redis==5.0.8" "numpy==1.26.4" "torch==2.2.2" "pinecone-client==5.0.1" pytest
       - name: Compile Python files
         run: python -m compileall -q .
 
