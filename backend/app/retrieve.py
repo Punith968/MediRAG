@@ -3,27 +3,23 @@ import io
 import logging
 import base64
 
-from openai import OpenAI
 from dotenv import load_dotenv
 from PIL import Image
 
 from .embed import get_text_embedding, index
 from .graph import get_context
+from .providers import OpenRouterProvider
 
 load_dotenv()
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "google/gemini-2.0-flash-001")
 
-if OPENROUTER_API_KEY:
-    ai_client = OpenAI(
-        base_url="https://openrouter.ai/api/v1",
-        api_key=OPENROUTER_API_KEY,
-    )
-    _ai_ready = True
-else:
-    ai_client = None
-    _ai_ready = False
+generation_provider = OpenRouterProvider(
+    api_key=OPENROUTER_API_KEY,
+    model=OPENROUTER_MODEL,
+)
+_ai_ready = generation_provider.configured
 
 logger = logging.getLogger(__name__)
 MEDICAL_DISCLAIMER = (
@@ -92,18 +88,14 @@ def _generate_content(parts):
             })
 
     try:
-        response = ai_client.chat.completions.create(
-            model=OPENROUTER_MODEL,
-            messages=[
-                {"role": "user", "content": messages_content}
-            ],
-            timeout=30.0
+        generated_text = generation_provider.generate(
+            messages=[{"role": "user", "content": messages_content}],
+            timeout=30.0,
         )
-        # Mocking the object structure to match the old genai response.text
         class _MockResponse:
             def __init__(self, text):
                 self.text = text
-        return _MockResponse(response.choices[0].message.content)
+        return _MockResponse(generated_text)
     except Exception as exc:
         logger.warning("OpenRouter generation failed: %s", exc)
         error_msg = str(exc).lower()
