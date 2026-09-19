@@ -24,6 +24,8 @@ jobs:
         run: python -m compileall -q .
 
       - name: Run backend tests
+        env:
+          PYTHONPATH: .
         run: pytest -q
 
   frontend:
