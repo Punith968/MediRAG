@@ -1,0 +1,32 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.cpu
+    env_file:
+      - ./.env
+    environment:
+      - PINECONE_API_KEY=${PINECONE_API_KEY}
+      - PINECONE_ENV=${PINECONE_ENV:-us-east-1}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENROUTER_MODEL=${OPENROUTER_MODEL:-google/gemini-2.0-flash-001}
+      - MEDIRAG_TMP_DIR=/tmp/medirag
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+    depends_on:
+      - redis
+    volumes:
+      - medirag_tmp:/tmp/medirag
+      - medirag_cache:/root/.cache
+    restart: unless-stopped
+
+volumes:
+  medirag_tmp:
+  medirag_cache:
+  redis_data:
