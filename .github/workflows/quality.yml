@@ -23,6 +23,12 @@ jobs:
       - name: Compile Python files
         run: python -m compileall -q .
 
+      - name: Install test runner
+        run: pip install pytest
+
+      - name: Run backend tests
+        run: pytest -q
+
   frontend:
     runs-on: ubuntu-latest
     defaults:
