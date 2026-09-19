@@ -18,6 +18,7 @@ from .retrieve import (
     get_generation_backend_status,
 )
 from .graph import get_graph_data
+from .validation import validate_file
 import logging
 import os
 import shutil
@@ -29,35 +30,6 @@ load_dotenv()
 
 app = FastAPI(title="MediRAG API")
 logger = logging.getLogger(__name__)
-
-ALLOWED_EXTENSIONS = {
-    "text": {".pdf", ".txt"},
-    "image": {".png", ".jpg", ".jpeg"},
-    "audio": {".mp3", ".wav", ".m4a"},
-}
-MAX_FILE_SIZE = 20 * 1024 * 1024  # 20MB
-
-def validate_file(filename: str, file_size: int) -> None:
-    """Validate file extension and size."""
-    if file_size > MAX_FILE_SIZE:
-        raise HTTPException(
-            status_code=400,
-            detail=f"File too large. Maximum size is 20MB, got {file_size / (1024*1024):.1f}MB"
-        )
-    
-    logger.info(f"Validating file: '{filename}'")
-    parts = (filename or "").replace("..", ".").split(".")
-    ext = "." + parts[-1].lower() if len(parts) > 1 else ""
-    logger.info(f"Extracted extension: '{ext}'")
-    all_allowed = set().union(*ALLOWED_EXTENSIONS.values())
-    
-    if ext not in all_allowed:
-        logger.warning(f"Extension '{ext}' not in allowed: {all_allowed}")
-        allowed_list = ", ".join(sorted(all_allowed))
-        raise HTTPException(
-            status_code=400,
-            detail=f"Unsupported file format: {ext}. Allowed formats: {allowed_list}"
-        )
 
 CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
 app.add_middleware(
