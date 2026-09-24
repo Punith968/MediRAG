@@ -22,7 +22,6 @@ jobs:
           pip install "fastapi==0.111.0" "openai==1.50.0" "slowapi==0.1.9" "Pillow==10.1.0" "redis==5.0.8" "numpy==1.26.4" "torch==2.2.2" "pinecone-client==5.0.1" "sentence-transformers==3.0.1" "transformers==4.41.2" "python-dotenv==1.0.0" "PyMuPDF==1.23.6" "networkx==3.2.1" "pydantic-settings==2.2.1" pytest
       - name: Compile Python files
         run: python -m compileall -q .
-
       - name: Run backend tests
         env:
           PYTHONPATH: .
